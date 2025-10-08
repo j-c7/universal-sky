@@ -182,8 +182,8 @@ func _connect_sun_signals() -> void:
 		sun.direction_changed.connect(_on_sun_direction_changed)
 	
 	# Values
-	if not sun.param_changed.is_connected(_on_sun_value_changed):
-		sun.param_changed.connect(_on_sun_value_changed)
+	if not sun.property_changed.is_connected(_on_sun_prop_changed):
+		sun.property_changed.connect(_on_sun_prop_changed)
 
 func _disconnect_sun_signals() -> void:
 	# Direction
@@ -191,8 +191,8 @@ func _disconnect_sun_signals() -> void:
 		sun.direction_changed.disconnect(_on_sun_direction_changed)
 	
 	# Values
-	if sun.param_changed.is_connected(_on_sun_value_changed):
-		sun.param_changed.disconnect(_on_sun_value_changed)
+	if sun.property_changed.is_connected(_on_sun_prop_changed):
+		sun.property_changed.disconnect(_on_sun_prop_changed)
 
 func _connect_moon_signals() -> void:
 	# Direction
@@ -200,8 +200,8 @@ func _connect_moon_signals() -> void:
 		moon.direction_changed.connect(_on_moon_direction_changed)
 	
 	# Values
-	if not moon.param_changed.is_connected(_on_moon_value_changed):
-		moon.param_changed.connect(_on_moon_value_changed)
+	if not moon.property_changed.is_connected(_on_moon_prop_changed):
+		moon.property_changed.connect(_on_moon_prop_changed)
 	
 	if not moon.yaw_offset_changed.is_connected(_on_moon_yaw_offset_changed):
 		moon.yaw_offset_changed.connect(_on_moon_yaw_offset_changed)
@@ -212,8 +212,8 @@ func _disconnect_moon_signals() -> void:
 		moon.direction_changed.disconnect(_on_moon_direction_changed)
 	
 	# Values
-	if moon.param_changed.is_connected(_on_moon_value_changed):
-		moon.param_changed.disconnect(_on_moon_value_changed)
+	if moon.property_changed.is_connected(_on_moon_prop_changed):
+		moon.property_changed.disconnect(_on_moon_prop_changed)
 	
 	if moon.yaw_offset_changed.is_connected(_on_moon_yaw_offset_changed):
 		moon.yaw_offset_changed.disconnect(_on_moon_yaw_offset_changed)
@@ -279,24 +279,24 @@ func _on_sun_direction_changed() -> void:
 	material.sun_direction = sun.direction
 	_update_sun_eclipse()
 
-func _on_sun_value_changed(p_type: int) -> void:
+func _on_sun_prop_changed(p_type: int) -> void:
 	if not material_is_valid or not sun_is_valid:
 		return
 	
 	match(p_type):
-		CelestialBody3D.CelestialParam.COLOR:
+		CelestialBody3D.CelestialProp.COLOR:
 			material.sun_color = sun.body_color
-		CelestialBody3D.CelestialParam.INTENSITY:
+		CelestialBody3D.CelestialProp.INTENSITY:
 			material.sun_intensity = sun.body_intensity
-		CelestialBody3D.CelestialParam.INTENSITY_MULTIPLIER:
+		CelestialBody3D.CelestialProp.INTENSITY_MULTIPLIER:
 			material.sun_intensity_multiplier = sun.intensity_multiplier
-		CelestialBody3D.CelestialParam.SIZE:
+		CelestialBody3D.CelestialProp.SIZE:
 			material.sun_size = sun.body_size
-		CelestialBody3D.CelestialParam.MIE_COLOR:
+		CelestialBody3D.CelestialProp.MIE_COLOR:
 			material.sun_mie_color = sun.mie_color
-		CelestialBody3D.CelestialParam.MIE_INTENSITY:
+		CelestialBody3D.CelestialProp.MIE_INTENSITY:
 			material.sun_mie_intensity = sun.mie_intensity
-		CelestialBody3D.CelestialParam.MIE_ANISOTROPY:
+		CelestialBody3D.CelestialProp.MIE_ANISOTROPY:
 			material.sun_mie_anisotropy = sun.mie_anisotropy
 
 # Moon
@@ -311,26 +311,26 @@ func _on_moon_direction_changed() -> void:
 	if sun_is_valid:
 		_update_sun_eclipse()
 
-func _on_moon_value_changed(p_type: int) -> void:
+func _on_moon_prop_changed(p_type: int) -> void:
 	if not material_is_valid or not moon_is_valid:
 		return
 	
 	match(p_type):
-		Moon3D.CelestialParam.COLOR:
+		Moon3D.CelestialProp.COLOR:
 			material.moon_color = moon.body_color
-		Moon3D.CelestialParam.INTENSITY:
+		Moon3D.CelestialProp.INTENSITY:
 			material.moon_intensity = moon.body_intensity
-		Moon3D.CelestialParam.INTENSITY_MULTIPLIER:
+		Moon3D.CelestialProp.INTENSITY_MULTIPLIER:
 			material.moon_intensity_multiplier = moon.intensity_multiplier
-		Moon3D.CelestialParam.SIZE:
+		Moon3D.CelestialProp.SIZE:
 			material.moon_size = moon.body_size
-		Moon3D.CelestialParam.TEXTURE:
+		Moon3D.CelestialProp.TEXTURE:
 			material.moon_texture = moon.texture
-		Moon3D.CelestialParam.MIE_COLOR:
+		Moon3D.CelestialProp.MIE_COLOR:
 			material.moon_mie_color = moon.mie_color
-		Moon3D.CelestialParam.MIE_INTENSITY:
+		Moon3D.CelestialProp.MIE_INTENSITY:
 			_update_moon_mie_intensity()
-		Moon3D.CelestialParam.MIE_ANISOTROPY:
+		Moon3D.CelestialProp.MIE_ANISOTROPY:
 			material.moon_mie_anisotropy = moon.mie_anisotropy
 
 func _on_moon_yaw_offset_changed() -> void:
@@ -347,13 +347,13 @@ func _update_celestials_data() -> void:
 func _update_sun_data() -> void:
 	_on_sun_direction_changed()
 	for i in range(0, 7):
-		_on_sun_value_changed(i)
+		_on_sun_prop_changed(i)
 
 func _update_moon_data() -> void:
 	_on_moon_direction_changed()
 	_on_moon_yaw_offset_changed()
 	for i in range(0, 8):
-		_on_moon_value_changed(i)
+		_on_moon_prop_changed(i)
 
 func _update_sun_eclipse() -> void:
 	material.sun_eclipse_intensity = sun.eclipse_multiplier

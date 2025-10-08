@@ -145,7 +145,7 @@ func _initialize() -> void:
 	outer_space_aligment = outer_space_aligment
 	if date_time_is_valid:
 		for i in range(4):
-			_on_date_time_param_changed(i)
+			_on_date_time_prop_changed(i)
 
 func _validate_property(property: Dictionary) -> void:
 	if calculations_mode == CalculationsMode.REALISTIC:
@@ -186,12 +186,12 @@ func _disconnect_sky_handler_child_tree_signals() -> void:
 
 # Datetime
 func _connect_date_time_signals() -> void:
-	if not _date_time.time_param_changed.is_connected(_on_date_time_param_changed):
-		_date_time.time_param_changed.connect(_on_date_time_param_changed)
+	if not _date_time.datetime_property_changed.is_connected(_on_date_time_prop_changed):
+		_date_time.datetime_property_changed.connect(_on_date_time_prop_changed)
 
 func _disconnect_date_time_signals() -> void:
-	if _date_time.time_param_changed.is_connected(_on_date_time_param_changed):
-		_date_time.time_param_changed.disconnect(_on_date_time_param_changed)
+	if _date_time.datetime_property_changed.is_connected(_on_date_time_prop_changed):
+		_date_time.datetime_property_changed.disconnect(_on_date_time_prop_changed)
 #endregion
 
 #region Signal Events
@@ -243,15 +243,15 @@ func _on_sky_handler_child_exiting_tree(p_node: Node) -> void:
 		if not _sky_handler.moon_is_valid:
 			_moon = null
 
-func _on_date_time_param_changed(p_param: int) -> void:
+func _on_date_time_prop_changed(p_param: int) -> void:
 	match p_param:
-		PlanetaryDateTime3D.DateTimeParam.TIMELINE:
+		PlanetaryDateTime3D.DateTimeProp.TIMELINE:
 			_timeline = _date_time.timeline
-		PlanetaryDateTime3D.DateTimeParam.DAY:
+		PlanetaryDateTime3D.DateTimeProp.DAY:
 			_day = _date_time.day
-		PlanetaryDateTime3D.DateTimeParam.MONTH:
+		PlanetaryDateTime3D.DateTimeProp.MONTH:
 			_month = _date_time.month
-		PlanetaryDateTime3D.DateTimeParam.YEAR:
+		PlanetaryDateTime3D.DateTimeProp.YEAR:
 			_year = _date_time.year
 	_update_celestial_coords()
 #endregion

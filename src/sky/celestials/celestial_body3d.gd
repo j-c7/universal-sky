@@ -1,7 +1,7 @@
 extends DirectionalLight3D
 class_name CelestialBody3D
 
-enum CelestialParam{
+enum CelestialProp{
 	COLOR = 0, 
 	INTENSITY = 1, 
 	SIZE = 2, 
@@ -13,7 +13,7 @@ enum CelestialParam{
 }
 
 signal direction_changed()
-signal param_changed(type)
+signal property_changed(type)
 
 @export
 var intensity_multiplier: float = 1.0:
@@ -29,21 +29,21 @@ var body_color:=Color(1.0, 0.936, 0.766, 1.0):
 	get: return body_color
 	set(value):
 		body_color = value
-		param_changed.emit(CelestialParam.COLOR)
+		property_changed.emit(CelestialProp.COLOR)
 
 @export
 var body_intensity: float = 1.0:
 	get: return body_intensity
 	set(value):
 		body_intensity = value
-		param_changed.emit(CelestialParam.INTENSITY)
+		property_changed.emit(CelestialProp.INTENSITY)
 
 @export
 var body_size: float = 1.0:
 	get: return body_size
 	set(value):
 		body_size = value
-		param_changed.emit(CelestialParam.SIZE)
+		property_changed.emit(CelestialProp.SIZE)
 #endregion
 
 #region Mie
@@ -53,21 +53,21 @@ var mie_color:= Color.WHITE:
 	get: return mie_color
 	set(value):
 		mie_color = value
-		param_changed.emit(CelestialParam.MIE_COLOR)
+		property_changed.emit(CelestialProp.MIE_COLOR)
 
 @export
 var mie_intensity: float = 1.0:
 	get: return mie_intensity
 	set(value):
 		mie_intensity = value
-		param_changed.emit(CelestialParam.MIE_INTENSITY)
+		property_changed.emit(CelestialProp.MIE_INTENSITY)
 
 @export_range(0.0, 0.9999)
 var mie_anisotropy: float = 0.85:
 	get: return mie_anisotropy
 	set(value):
 		mie_anisotropy = value
-		param_changed.emit(CelestialParam.MIE_ANISOTROPY)
+		property_changed.emit(CelestialProp.MIE_ANISOTROPY)
 #endregion
 
 #region Lighting
@@ -188,7 +188,7 @@ func _disconnect_light_curve_changed() -> void:
 #region Signal Events
 func _on_intensity_multiplier() -> void:
 	_update_light_energy()
-	param_changed.emit(CelestialParam.INTENSITY_MULTIPLIER)
+	property_changed.emit(CelestialProp.INTENSITY_MULTIPLIER)
 
 func _on_light_gradient_changed() -> void:
 	_update_light_color()

@@ -5,10 +5,10 @@ class_name PlanetaryDateTime3D
 const _MAX_TIMELINE_VALUE: int = 24.0
 const _MIN_TIMELINE_VALUE: int = 0.0000
 
-enum DateTimeParam{ TIMELINE = 0, DAY, MONTH, YEAR }
+enum DateTimeProp{ TIMELINE = 0, DAY, MONTH, YEAR }
 enum ProcessTimeMode{ Editor = 0, Runtime, Both, Off }
 
-signal time_param_changed(param_name)
+signal datetime_property_changed(param_name)
 
 @export 
 var system_sync: bool = false:
@@ -45,7 +45,7 @@ var timeline: float = 7.0:
 			day -= 1
 			value += _MAX_TIMELINE_VALUE
 		timeline = value
-		time_param_changed.emit(DateTimeParam.TIMELINE)
+		datetime_property_changed.emit(DateTimeProp.TIMELINE)
 
 @export
 var day: int = 12:
@@ -58,7 +58,7 @@ var day: int = 12:
 			month -= 1
 			value += max_days_per_month
 		day = value
-		time_param_changed.emit(DateTimeParam.DAY)
+		datetime_property_changed.emit(DateTimeProp.DAY)
 
 @export
 var month: int = 2:
@@ -71,7 +71,7 @@ var month: int = 2:
 			year -= 1
 			value += 12
 		month = value
-		time_param_changed.emit(DateTimeParam.MONTH)
+		datetime_property_changed.emit(DateTimeProp.MONTH)
 
 @export
 var year: int = 2025:
@@ -79,7 +79,7 @@ var year: int = 2025:
 	set(value):
 		#year = max(0, value)
 		year = value
-		time_param_changed.emit(DateTimeParam.YEAR)
+		datetime_property_changed.emit(DateTimeProp.YEAR)
 
 var _date_time_os: Dictionary
 
