@@ -8,7 +8,7 @@ const _MIN_TIMELINE_VALUE: int = 0.0000
 enum DateTimeProp{ TIMELINE = 0, DAY, MONTH, YEAR }
 enum ProcessTimeMode{ Editor = 0, Runtime, Both, Off }
 
-signal datetime_property_changed(param_name)
+signal datetime_property_changed(param_name, value)
 
 @export 
 var system_sync: bool = false:
@@ -45,7 +45,7 @@ var timeline: float = 7.0:
 			day -= 1
 			value += _MAX_TIMELINE_VALUE
 		timeline = value
-		datetime_property_changed.emit(DateTimeProp.TIMELINE)
+		datetime_property_changed.emit(DateTimeProp.TIMELINE, timeline)
 
 @export
 var day: int = 12:
@@ -58,7 +58,7 @@ var day: int = 12:
 			month -= 1
 			value += max_days_per_month
 		day = value
-		datetime_property_changed.emit(DateTimeProp.DAY)
+		datetime_property_changed.emit(DateTimeProp.DAY, day)
 
 @export
 var month: int = 2:
@@ -71,7 +71,7 @@ var month: int = 2:
 			year -= 1
 			value += 12
 		month = value
-		datetime_property_changed.emit(DateTimeProp.MONTH)
+		datetime_property_changed.emit(DateTimeProp.MONTH, month)
 
 @export
 var year: int = 2025:
@@ -79,7 +79,7 @@ var year: int = 2025:
 	set(value):
 		#year = max(0, value)
 		year = value
-		datetime_property_changed.emit(DateTimeProp.YEAR)
+		datetime_property_changed.emit(DateTimeProp.YEAR, year)
 
 var _date_time_os: Dictionary
 
@@ -105,6 +105,11 @@ var max_days_per_month: int:
 
 #region Godot Node Overrides
 func _enter_tree() -> void:
+	initialize_props()
+
+# TODO: To reduce coupling, this function can be declared in an abstract class 
+# or in a trait (when gdscript allows it).
+func initialize_props() -> void:
 	system_sync = system_sync
 	total_cycle_in_minutes = total_cycle_in_minutes
 	timeline = timeline

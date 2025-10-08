@@ -144,8 +144,9 @@ func _initialize() -> void:
 	moon_coords_offset = moon_coords_offset
 	outer_space_aligment = outer_space_aligment
 	if date_time_is_valid:
-		for i in range(4):
-			_on_date_time_prop_changed(i)
+		_date_time.initialize_props()
+		#for i in range(4):
+			#_on_date_time_prop_changed(i)
 
 func _validate_property(property: Dictionary) -> void:
 	if calculations_mode == CalculationsMode.REALISTIC:
@@ -243,16 +244,16 @@ func _on_sky_handler_child_exiting_tree(p_node: Node) -> void:
 		if not _sky_handler.moon_is_valid:
 			_moon = null
 
-func _on_date_time_prop_changed(p_param: int) -> void:
+func _on_date_time_prop_changed(p_param: int, p_value: Variant) -> void:
 	match p_param:
 		PlanetaryDateTime3D.DateTimeProp.TIMELINE:
-			_timeline = _date_time.timeline
+			_timeline = p_value
 		PlanetaryDateTime3D.DateTimeProp.DAY:
-			_day = _date_time.day
+			_day = p_value
 		PlanetaryDateTime3D.DateTimeProp.MONTH:
-			_month = _date_time.month
+			_month = p_value
 		PlanetaryDateTime3D.DateTimeProp.YEAR:
-			_year = _date_time.year
+			_year = p_value
 	_update_celestial_coords()
 #endregion
 
