@@ -274,7 +274,6 @@ func _on_sun_direction_changed() -> void:
 	
 	if moon_is_valid:
 		_on_moon_direction_changed()
-		_update_moon_mie_intensity()
 	
 	material.sun_direction = sun.direction
 	_update_sun_eclipse()
@@ -307,7 +306,6 @@ func _on_moon_direction_changed() -> void:
 	material.moon_direction = moon.direction
 	material.moon_phases_mul = moon.phases_mul
 	material.moon_matrix = moon.clamped_matrix
-	_update_moon_mie_intensity()
 	if sun_is_valid:
 		_update_sun_eclipse()
 
@@ -329,7 +327,7 @@ func _on_moon_prop_changed(p_type: int) -> void:
 		Moon3D.CelestialProp.MIE_COLOR:
 			material.moon_mie_color = moon.mie_color
 		Moon3D.CelestialProp.MIE_INTENSITY:
-			_update_moon_mie_intensity()
+			material.moon_mie_intensity = moon.get_final_moon_mie_intensity()
 		Moon3D.CelestialProp.MIE_ANISOTROPY:
 			material.moon_mie_anisotropy = moon.mie_anisotropy
 
@@ -358,6 +356,4 @@ func _update_moon_data() -> void:
 func _update_sun_eclipse() -> void:
 	material.sun_eclipse_intensity = sun.eclipse_multiplier
 
-func _update_moon_mie_intensity() -> void:
-	material.moon_mie_intensity = moon.get_final_moon_mie_intensity()
 #endregion

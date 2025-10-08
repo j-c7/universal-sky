@@ -146,11 +146,16 @@ func set_sun(p_sun: Sun3D) -> void:
 
 #region Signal Events
 func _on_sun_direction_changed() -> void:
+	property_changed.emit(CelestialProp.MIE_INTENSITY)
 	_update_light_energy()
 
 func _on_light_transition_curve_changed() -> void: 
 	_update_light_energy()
 #endregion
+
+func _update_params() -> void:
+	property_changed.emit(CelestialProp.MIE_INTENSITY)
+	super()
 
 # Lighting
 func _get_light_energy() -> float:

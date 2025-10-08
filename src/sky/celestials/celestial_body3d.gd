@@ -13,7 +13,7 @@ enum CelestialProp{
 }
 
 signal direction_changed()
-signal property_changed(type)
+signal property_changed(type, value)
 
 @export
 var intensity_multiplier: float = 1.0:
