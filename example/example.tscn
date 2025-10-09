@@ -39,9 +39,11 @@ seamless = true
 script = ExtResource("3_2t0jo")
 atm_day_intensity = 7.2
 atm_day_gradient = SubResource("Gradient_5pvsd")
+atm_night_intensity = 0.365
+atm_night_tint = Color(0, 1, 0.9296875, 1)
+atm_ground_color = Color(0.1574707, 0.24809837, 0.3359375, 1)
 background_texture = ExtResource("2_gv6sx")
 stars_field_texture = ExtResource("4_hmx4h")
-enable_dynamic_clouds = true
 dynamic_clouds_texture = SubResource("NoiseTexture2D_hmx4h")
 dynamic_clouds_texture2 = SubResource("NoiseTexture2D_2t0jo")
 dynamic_clouds_coverage = 0.47
@@ -179,7 +181,9 @@ metadata/_custom_type_script = "uid://gok381plcuqb"
 
 [node name="PlanetaryDateTime" type="Node" parent="Planetary"]
 script = ExtResource("10_frjel")
-timeline = 19.93359239702536
+process_time_mode = 3
+timeline = 6.623114782222428
+day = 13
 metadata/_custom_type_script = "uid://bldir3yls8ej6"
 
 [node name="SkyHandler" type="Node" parent="Planetary"]
@@ -189,9 +193,10 @@ enviro_container = NodePath("../../WorldEnvironment")
 metadata/_custom_type_script = "uid://cyj8uwon5dmh1"
 
 [node name="Sun3D" type="DirectionalLight3D" parent="Planetary/SkyHandler"]
-transform = Transform3D(-0.01782358, -0.47774896, -0.8783154, 0, 0.87845504, -0.4778248, 0.99984145, -0.008516519, -0.015657183, 0.08873164, 0.9503837, -1.1224185)
+transform = Transform3D(0.24736151, 0.03206366, 0.96839213, 0, 0.99945223, -0.03309204, -0.9689234, 0.008185696, 0.2472259, 0.08873164, 0.9503837, -1.1224185)
 light_color = Color(1, 0.5239258, 0.23828125, 1)
-light_energy = 0.0
+light_energy = 0.28709775
+shadow_enabled = true
 script = ExtResource("5_frjel")
 enable_solar_eclipse = true
 body_color = Color(1, 0.7058, 0.447, 1)
@@ -207,18 +212,17 @@ material_override = SubResource("StandardMaterial3D_yu7y7")
 mesh = SubResource("SphereMesh_hmx4h")
 
 [node name="Moon3D" type="DirectionalLight3D" parent="Planetary/SkyHandler"]
-transform = Transform3D(-0.2802708, -0.32203633, 0.9042903, 0.52540267, 0.7369448, 0.42528164, -0.8033682, 0.5943105, -0.03734541, -1.5601343, -0.00061772263, -0.42799088)
+transform = Transform3D(0.20394313, -0.053229257, -0.97753453, 0.40989298, -0.9021416, 0.13463992, -0.88904154, -0.42814344, -0.16216719, -1.5601343, -0.00061772263, -0.42799088)
 light_color = Color(0.54, 0.7, 0.9, 1)
-light_energy = 0.065
-shadow_enabled = true
+light_energy = 0.0
 script = ExtResource("6_yu7y7")
 texture = ExtResource("7_cvb06")
+yaw_offset = -0.34
 light_transition_curve = SubResource("Curve_2t0jo")
 body_color = Color(1, 1, 1, 1)
-body_size = 2.205
 mie_color = Color(0.623, 0.786, 1, 1)
 lighting_color = Color(0.54, 0.7, 0.9, 1)
-lighting_energy = 0.065
+lighting_energy = 0.3
 metadata/_custom_type_script = "uid://dg8d3ajenewmk"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
