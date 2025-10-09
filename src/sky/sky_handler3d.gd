@@ -184,6 +184,10 @@ func _connect_sun_signals() -> void:
 	# Values
 	if not sun.property_changed.is_connected(_on_sun_prop_changed):
 		sun.property_changed.connect(_on_sun_prop_changed)
+	
+	# Eclipses
+	if not sun.updated_eclipse.is_connected(_on_update_sun_eclipse):
+		sun.updated_eclipse.connect(_on_update_sun_eclipse)
 
 func _disconnect_sun_signals() -> void:
 	# Direction
@@ -193,6 +197,10 @@ func _disconnect_sun_signals() -> void:
 	# Values
 	if sun.property_changed.is_connected(_on_sun_prop_changed):
 		sun.property_changed.disconnect(_on_sun_prop_changed)
+	
+	# Eclipses
+	if sun.updated_eclipse.is_connected(_on_update_sun_eclipse):
+		sun.updated_eclipse.disconnect(_on_update_sun_eclipse)
 
 func _connect_moon_signals() -> void:
 	# Direction
@@ -205,6 +213,14 @@ func _connect_moon_signals() -> void:
 	
 	if not moon.yaw_offset_changed.is_connected(_on_moon_yaw_offset_changed):
 		moon.yaw_offset_changed.connect(_on_moon_yaw_offset_changed)
+	
+	# Phases mul
+	if not moon.updated_moon_phases_multiplier.is_connected(_on_updated_moon_phases_mul):
+		moon.updated_moon_phases_multiplier.connect(_on_updated_moon_phases_mul)
+	
+	# Matrix
+	if not moon.updated_moon_matrix.is_connected(_on_updated_moon_matrix):
+		moon.updated_moon_matrix.connect(_on_updated_moon_matrix)
 
 func _disconnect_moon_signals() -> void:
 	# Direction
@@ -217,6 +233,15 @@ func _disconnect_moon_signals() -> void:
 	
 	if moon.yaw_offset_changed.is_connected(_on_moon_yaw_offset_changed):
 		moon.yaw_offset_changed.disconnect(_on_moon_yaw_offset_changed)
+	
+	# Phases mul
+	if moon.updated_moon_phases_multiplier.is_connected(_on_updated_moon_phases_mul):
+		moon.updated_moon_phases_multiplier.disconnect(_on_updated_moon_phases_mul)
+	
+	# Matrix
+	if moon.updated_moon_matrix.is_connected(_on_updated_moon_matrix):
+		moon.updated_moon_matrix.disconnect(_on_updated_moon_matrix)
+	
 #endregion
 
 #region Signal Events
@@ -268,73 +293,71 @@ func _on_enviro_changed() -> void:
 	pass
 
 # Sun
-func _on_sun_direction_changed() -> void:
+func _on_sun_direction_changed(p_value: Vector3) -> void:
 	if not material_is_valid or not sun_is_valid:
 		return
 	
-	if moon_is_valid:
-		_on_moon_direction_changed()
-	
-	material.sun_direction = sun.direction
-	_update_sun_eclipse()
+	material.sun_direction = p_value
 
-func _on_sun_prop_changed(p_type: int) -> void:
+func _on_sun_prop_changed(p_type: int, p_value: Variant) -> void:
 	if not material_is_valid or not sun_is_valid:
 		return
 	
 	match(p_type):
 		CelestialBody3D.CelestialProp.COLOR:
-			material.sun_color = sun.body_color
+			material.sun_color = p_value
 		CelestialBody3D.CelestialProp.INTENSITY:
-			material.sun_intensity = sun.body_intensity
+			material.sun_intensity = p_value
 		CelestialBody3D.CelestialProp.INTENSITY_MULTIPLIER:
-			material.sun_intensity_multiplier = sun.intensity_multiplier
+			material.sun_intensity_multiplier = p_value
 		CelestialBody3D.CelestialProp.SIZE:
-			material.sun_size = sun.body_size
+			material.sun_size = p_value
 		CelestialBody3D.CelestialProp.MIE_COLOR:
-			material.sun_mie_color = sun.mie_color
+			material.sun_mie_color = p_value
 		CelestialBody3D.CelestialProp.MIE_INTENSITY:
-			material.sun_mie_intensity = sun.mie_intensity
+			material.sun_mie_intensity = p_value
 		CelestialBody3D.CelestialProp.MIE_ANISOTROPY:
-			material.sun_mie_anisotropy = sun.mie_anisotropy
+			material.sun_mie_anisotropy = p_value
 
 # Moon
-func _on_moon_direction_changed() -> void:
+func _on_moon_direction_changed(p_value: Vector3) -> void:
 	if not material_is_valid or not moon_is_valid:
 		return
 	
-	material.moon_direction = moon.direction
-	material.moon_phases_mul = moon.phases_mul
-	material.moon_matrix = moon.clamped_matrix
-	if sun_is_valid:
-		_update_sun_eclipse()
+	material.moon_direction = p_value
 
-func _on_moon_prop_changed(p_type: int) -> void:
+func _on_updated_moon_phases_mul(p_value: float) -> void:
+	material.moon_phases_mul = p_value
+
+func _on_updated_moon_matrix(p_value: Basis) -> void:
+	material.moon_matrix = p_value
+
+func _on_moon_prop_changed(p_type: int, p_value: Variant) -> void:
 	if not material_is_valid or not moon_is_valid:
 		return
 	
 	match(p_type):
 		Moon3D.CelestialProp.COLOR:
-			material.moon_color = moon.body_color
+			material.moon_color = p_value
 		Moon3D.CelestialProp.INTENSITY:
-			material.moon_intensity = moon.body_intensity
+			material.moon_intensity = p_value
 		Moon3D.CelestialProp.INTENSITY_MULTIPLIER:
-			material.moon_intensity_multiplier = moon.intensity_multiplier
+			material.moon_intensity_multiplier = p_value
 		Moon3D.CelestialProp.SIZE:
-			material.moon_size = moon.body_size
+			material.moon_size = p_value
 		Moon3D.CelestialProp.TEXTURE:
-			material.moon_texture = moon.texture
+			material.moon_texture = p_value
 		Moon3D.CelestialProp.MIE_COLOR:
-			material.moon_mie_color = moon.mie_color
+			material.moon_mie_color = p_value
 		Moon3D.CelestialProp.MIE_INTENSITY:
-			material.moon_mie_intensity = moon.get_final_moon_mie_intensity()
+			material.moon_mie_intensity = p_value
 		Moon3D.CelestialProp.MIE_ANISOTROPY:
-			material.moon_mie_anisotropy = moon.mie_anisotropy
+			material.moon_mie_anisotropy = p_value
 
-func _on_moon_yaw_offset_changed() -> void:
+func _on_moon_yaw_offset_changed(p_value: float) -> void:
 	if not material_is_valid or not moon_is_valid:
 		return
-	material.moon_texture_yaw_offset = moon.yaw_offset
+	material.moon_texture_yaw_offset = p_value
 #endregion
 
 #region Update
@@ -343,17 +366,13 @@ func _update_celestials_data() -> void:
 	_update_moon_data()
 
 func _update_sun_data() -> void:
-	_on_sun_direction_changed()
-	for i in range(0, 7):
-		_on_sun_prop_changed(i)
+	if material_is_valid and sun_is_valid:
+		sun.initialize_props()
 
 func _update_moon_data() -> void:
-	_on_moon_direction_changed()
-	_on_moon_yaw_offset_changed()
-	for i in range(0, 8):
-		_on_moon_prop_changed(i)
+	if material_is_valid and moon_is_valid:
+		moon.initialize_props()
 
-func _update_sun_eclipse() -> void:
-	material.sun_eclipse_intensity = sun.eclipse_multiplier
-
+func _on_update_sun_eclipse(p_value: float) -> void:
+	material.sun_eclipse_intensity = p_value
 #endregion

@@ -7,7 +7,9 @@ const _DEFAULT_MOON_MAP_TEXTURE:= preload(
 	"res://addons/universal-sky/assets/textures/moon/MoonMap.png"
 )
 
-signal yaw_offset_changed
+signal yaw_offset_changed(value)
+signal updated_moon_phases_multiplier(value)
+signal updated_moon_matrix(value)
 
 @export_group("Texture")
 @export
@@ -26,14 +28,14 @@ var texture: Texture = null:
 	get: return texture
 	set(value):
 		texture = value
-		property_changed.emit(CelestialProp.TEXTURE)
+		property_changed.emit(CelestialProp.TEXTURE, texture)
 
 @export
 var yaw_offset: float = -0.3:
 	get: return yaw_offset
 	set(value):
 		yaw_offset = value
-		yaw_offset_changed.emit()
+		yaw_offset_changed.emit(yaw_offset)
 
 @export_group("Phases")
 @export
@@ -95,7 +97,7 @@ var clamped_matrix: Basis:
 	).transposed()
 
 #region Godot Node Overrides
-func _on_init() -> void:
+func initialize_props() -> void:
 	super()
 	body_size =  1.0
 	body_intensity = 1.0
@@ -108,6 +110,7 @@ func _on_init() -> void:
 	# Initialize moon params.
 	use_custom_texture = use_custom_texture
 	texture = texture
+	yaw_offset = yaw_offset
 	enable_light_moon_phases = enable_light_moon_phases
 	light_transition_curve = light_transition_curve
 	light_transition_threshold = light_transition_threshold
@@ -145,8 +148,9 @@ func set_sun(p_sun: Sun3D) -> void:
 		_sun = null
 
 #region Signal Events
-func _on_sun_direction_changed() -> void:
-	property_changed.emit(CelestialProp.MIE_INTENSITY)
+func _on_sun_direction_changed(p_value: Vector3) -> void:
+	property_changed.emit(CelestialProp.MIE_INTENSITY, get_final_moon_mie_intensity())
+	updated_moon_phases_multiplier.emit(phases_mul)
 	_update_light_energy()
 
 func _on_light_transition_curve_changed() -> void: 
@@ -154,7 +158,9 @@ func _on_light_transition_curve_changed() -> void:
 #endregion
 
 func _update_params() -> void:
-	property_changed.emit(CelestialProp.MIE_INTENSITY)
+	property_changed.emit(CelestialProp.MIE_INTENSITY, get_final_moon_mie_intensity())
+	updated_moon_phases_multiplier.emit(phases_mul)
+	updated_moon_matrix.emit(clamped_matrix)
 	super()
 
 # Lighting

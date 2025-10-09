@@ -12,7 +12,7 @@ enum CelestialProp{
 	INTENSITY_MULTIPLIER = 7,
 }
 
-signal direction_changed()
+signal direction_changed(value)
 signal property_changed(type, value)
 
 @export
@@ -29,21 +29,21 @@ var body_color:=Color(1.0, 0.936, 0.766, 1.0):
 	get: return body_color
 	set(value):
 		body_color = value
-		property_changed.emit(CelestialProp.COLOR)
+		property_changed.emit(CelestialProp.COLOR, body_color)
 
 @export
 var body_intensity: float = 1.0:
 	get: return body_intensity
 	set(value):
 		body_intensity = value
-		property_changed.emit(CelestialProp.INTENSITY)
+		property_changed.emit(CelestialProp.INTENSITY, body_intensity)
 
 @export
 var body_size: float = 1.0:
 	get: return body_size
 	set(value):
 		body_size = value
-		property_changed.emit(CelestialProp.SIZE)
+		property_changed.emit(CelestialProp.SIZE, body_size)
 #endregion
 
 #region Mie
@@ -53,21 +53,21 @@ var mie_color:= Color.WHITE:
 	get: return mie_color
 	set(value):
 		mie_color = value
-		property_changed.emit(CelestialProp.MIE_COLOR)
+		property_changed.emit(CelestialProp.MIE_COLOR, mie_color)
 
 @export
 var mie_intensity: float = 1.0:
 	get: return mie_intensity
 	set(value):
 		mie_intensity = value
-		property_changed.emit(CelestialProp.MIE_INTENSITY)
+		property_changed.emit(CelestialProp.MIE_INTENSITY, mie_intensity)
 
 @export_range(0.0, 0.9999)
 var mie_anisotropy: float = 0.85:
 	get: return mie_anisotropy
 	set(value):
 		mie_anisotropy = value
-		property_changed.emit(CelestialProp.MIE_ANISOTROPY)
+		property_changed.emit(CelestialProp.MIE_ANISOTROPY, mie_anisotropy)
 #endregion
 
 #region Lighting
@@ -139,7 +139,7 @@ var _lighting_energy_curve_is_valid: bool:
 
 #region Godot Node Overrides
 func _init() -> void:
-	_on_init()
+	initialize_props()
 
 func _notification(what: int) -> void:
 	_on_notification(what)
@@ -150,12 +150,13 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_EXIT_TREE:
 		_on_exit_tree()
 
-func _on_init() -> void:
+func initialize_props() -> void:
 	lighting_color = lighting_color
 	lighting_gradient = lighting_gradient
 	lighting_energy = lighting_energy
 	lighting_energy_curve = lighting_energy_curve
 	intensity_multiplier = intensity_multiplier
+	_update_params()
 
 func _on_enter_tree() -> void:
 	intensity_multiplier = intensity_multiplier
@@ -188,7 +189,7 @@ func _disconnect_light_curve_changed() -> void:
 #region Signal Events
 func _on_intensity_multiplier() -> void:
 	_update_light_energy()
-	property_changed.emit(CelestialProp.INTENSITY_MULTIPLIER)
+	property_changed.emit(CelestialProp.INTENSITY_MULTIPLIER, intensity_multiplier)
 
 func _on_light_gradient_changed() -> void:
 	_update_light_color()
@@ -199,7 +200,7 @@ func _on_light_curve_changed() -> void:
 
 # Update
 func _update_params() -> void:
-	direction_changed.emit()
+	direction_changed.emit(direction)
 	_update_light_color()
 	_update_light_energy()
 

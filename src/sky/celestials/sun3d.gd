@@ -3,6 +3,8 @@
 extends CelestialBody3D
 class_name Sun3D
 
+signal updated_eclipse(value)
+
 @export_group("Eclipse")
 @export
 var enable_solar_eclipse: bool = false:
@@ -42,11 +44,12 @@ var eclipse_multiplier: float = 1.0:
 	get: return eclipse_multiplier
 
 # Godot Node Overrides
-func _on_init() -> void:
+func initialize_props() -> void:
 	super()
 	body_color = Color(1, 0.7058, 0.4470)
 	body_intensity = 10.0
 	body_size = 1.0
+	_update_eclipse()
 
 #region Connections
 func _connect_moon_signals() -> void:
@@ -68,7 +71,7 @@ func set_moon(p_moon: Moon3D) -> void:
 		_moon = null
 
 # Signal Events
-func _on_moon_direction_changed() -> void:
+func _on_moon_direction_changed(p_value: Vector3) -> void:
 	_update_eclipse()
 
 # Update
@@ -99,5 +102,7 @@ func _update_eclipse() -> void:
 		eclipse_multiplier = factor
 	else:
 		eclipse_multiplier = 1.0
+	
+	updated_eclipse.emit(eclipse_multiplier)
 	
 	_update_light_energy()
