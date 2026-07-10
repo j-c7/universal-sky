@@ -44,6 +44,17 @@ Volumetric clouds use compute shaders and require the Forward+ renderer. See `ex
 
 Lower update-frame values provide faster visual updates, while higher values reduce the per-frame GPU cost.
 
+## Screenshots
+
+#### Night
+![Night Screenshot](docs/screenshots/volumetric-midnight.png)
+
+#### Day
+![Day Screenshot](docs/screenshots/volumetric-day.png)
+
+#### Sunrise
+![Sunrise Screenshot](docs/screenshots/volumetric-sunrise.png)
+
 ### Credits
 
 Based on [Clay John’s volumetric cloud demo v2](https://github.com/clayjohn/godot-volumetric-cloud-demo-v2), released under the MIT license. The original license notice is included in [`LICENSES/volumetric-clouds-MIT.txt`](LICENSES/volumetric-clouds-MIT.txt).
