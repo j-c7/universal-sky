@@ -1,0 +1,29 @@
+[remap]
+
+importer="3d_texture"
+type="CompressedTexture3D"
+uid="uid://bqfj4xnmbbsfy"
+path.bptc="res://.godot/imported/perlworlnoise.tga-bb6e32893c636dd22cc691d39c9748a0.bptc.ctex3d"
+metadata={
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
+}
+
+[deps]
+
+source_file="res://addons/universal-sky/assets/textures/volumetric-clouds/perlworlnoise.tga"
+dest_files=["res://.godot/imported/perlworlnoise.tga-bb6e32893c636dd22cc691d39c9748a0.bptc.ctex3d"]
+
+[params]
+
+compress/mode=2
+compress/high_quality=true
+compress/lossy_quality=0.7
+compress/uastc_level=0
+compress/rdo_quality_loss=0.0
+compress/hdr_compression=1
+compress/channel_pack=0
+mipmaps/generate=true
+mipmaps/limit=-1
+slices/horizontal=128
+slices/vertical=1

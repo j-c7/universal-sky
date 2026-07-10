@@ -1,0 +1,29 @@
+[remap]
+
+importer="3d_texture"
+type="CompressedTexture3D"
+uid="uid://b2ip8ke31q5g0"
+path.bptc="res://.godot/imported/worlnoise.bmp-1bcbe3824bb0708254be305dac27d1c6.bptc.ctex3d"
+metadata={
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
+}
+
+[deps]
+
+source_file="res://addons/universal-sky/assets/textures/volumetric-clouds/worlnoise.bmp"
+dest_files=["res://.godot/imported/worlnoise.bmp-1bcbe3824bb0708254be305dac27d1c6.bptc.ctex3d"]
+
+[params]
+
+compress/mode=2
+compress/high_quality=true
+compress/lossy_quality=0.7
+compress/uastc_level=0
+compress/rdo_quality_loss=0.0
+compress/hdr_compression=1
+compress/channel_pack=0
+mipmaps/generate=true
+mipmaps/limit=-1
+slices/horizontal=32
+slices/vertical=1
