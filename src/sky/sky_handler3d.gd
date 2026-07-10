@@ -103,7 +103,9 @@ var deep_space_rotation_matrix: Basis = Basis.from_euler(Vector3.ONE):
 func _notification(what: int) -> void:
 	match what:
 		NOTIFICATION_ENTER_TREE:
-			SkyInstances.set_instance(self)
+			var sky_instances:= get_node_or_null("/root/SkyInstances")
+			if sky_instances != null:
+				sky_instances.set_instance(self)
 			_connect_child_tree_signals()
 			material = material
 			enviro_container = enviro_container
@@ -111,7 +113,9 @@ func _notification(what: int) -> void:
 			sky_radiance_size = sky_radiance_size
 		NOTIFICATION_EXIT_TREE:
 			_disconnect_child_tree_signals()
-			SkyInstances.remove_instance(self)
+			var sky_instances:= get_node_or_null("/root/SkyInstances")
+			if sky_instances != null:
+				sky_instances.remove_instance(self)
 			if enviro_is_valid:
 				_enviro.sky.sky_material = null
 				_disconnect_enviro_changed()
@@ -133,6 +137,7 @@ func _initialize_material() -> void:
 		material.set_compatibility(true)
 	else:
 		material.set_compatibility(false)
+	_queue_volumetric_cloud_lighting_sync()
 
 func _get_rendering_method() -> String:
 	return str(ProjectSettings.get_setting_with_override(RENDERING_METHOD_PATH))
@@ -298,6 +303,7 @@ func _on_sun_direction_changed(p_value: Vector3) -> void:
 		return
 	
 	material.sun_direction = p_value
+	_queue_volumetric_cloud_lighting_sync()
 
 func _on_sun_prop_changed(p_type: int, p_value: Variant) -> void:
 	if not material_is_valid or not sun_is_valid:
@@ -318,6 +324,7 @@ func _on_sun_prop_changed(p_type: int, p_value: Variant) -> void:
 			material.sun_mie_intensity = p_value
 		CelestialBody3D.CelestialProp.MIE_ANISOTROPY:
 			material.sun_mie_anisotropy = p_value
+	_queue_volumetric_cloud_lighting_sync()
 
 # Moon
 func _on_moon_direction_changed(p_value: Vector3) -> void:
@@ -368,6 +375,7 @@ func _update_celestials_data() -> void:
 func _update_sun_data() -> void:
 	if material_is_valid and sun_is_valid:
 		sun.initialize_props()
+		_queue_volumetric_cloud_lighting_sync()
 
 func _update_moon_data() -> void:
 	if material_is_valid and moon_is_valid:
@@ -375,4 +383,22 @@ func _update_moon_data() -> void:
 
 func _on_update_sun_eclipse(p_value: float) -> void:
 	material.sun_eclipse_intensity = p_value
+	_queue_volumetric_cloud_lighting_sync()
+
+
+func _queue_volumetric_cloud_lighting_sync() -> void:
+	if not is_inside_tree():
+		_sync_volumetric_cloud_lighting()
+		return
+	if not is_queued_for_deletion():
+		call_deferred("_sync_volumetric_cloud_lighting")
+
+
+func _sync_volumetric_cloud_lighting() -> void:
+	if material is StandardSkyMaterial and sun_is_valid:
+		material.set_volumetric_cloud_lighting(
+			sun.direction,
+			sun.light_color,
+			sun.light_energy
+		)
 #endregion
