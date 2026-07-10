@@ -26,6 +26,7 @@ Dynamic Sky for Godot Engine 4.5
 - Stars field scintillation.
 - Simple dynamic clouds.
 - Clouds panorama(static clouds).
+- Incrementally ray-marched volumetric clouds (Forward+).
 - Sun eclipses
 
 ### Planetary:
@@ -34,3 +35,15 @@ Dynamic Sky for Godot Engine 4.5
 - Realistic sun and moon positions.
 - Datetime with basic gregorian calendar.
 - Realistic deep space rotation.
+
+## Volumetric Clouds
+
+Add a `VolumetricClouds` resource to your `StandardSkyMaterial` to configure coverage, density, wind, lighting, resolution, and update speed.
+
+Volumetric clouds use compute shaders and require the Forward+ renderer. See `example/volumetric_clouds.tscn` for a configured example.
+
+Lower update-frame values provide faster visual updates, while higher values reduce the per-frame GPU cost.
+
+### Credits
+
+Based on [Clay John’s volumetric cloud demo v2](https://github.com/clayjohn/godot-volumetric-cloud-demo-v2), released under the MIT license. The original license notice is included in [`LICENSES/volumetric-clouds-MIT.txt`](LICENSES/volumetric-clouds-MIT.txt).
