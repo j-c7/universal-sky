@@ -236,6 +236,7 @@ var atm_ground_color:= Color(0.543, 0.543, 0.543): # Color(0.204, 0.345, 0.467):
 			material.get_rid(), ATM_GROUND_COLOR_PARAM, 
 				c.srgb_to_linear() if is_compatibility else c
 		)
+		_sync_volumetric_cloud_lighting()
 		emit_changed()
 #endregion
 
@@ -355,6 +356,25 @@ var stars_scintillation_speed: float = 1.0:
 #endregion
 
 #region Clouds
+@export_group('Volumetric Clouds')
+## Forward+ volumetric clouds. Use one resource per sky material.
+@export
+var volumetric_clouds: VolumetricClouds:
+	get: return volumetric_clouds
+	set(value):
+		if volumetric_clouds == value:
+			if is_instance_valid(volumetric_clouds):
+				volumetric_clouds.attach(material)
+				_sync_volumetric_cloud_lighting()
+			return
+		if is_instance_valid(volumetric_clouds):
+			volumetric_clouds.detach()
+		volumetric_clouds = value
+		if is_instance_valid(volumetric_clouds):
+			volumetric_clouds.attach(material)
+			_sync_volumetric_cloud_lighting()
+		emit_changed()
+
 @export_group('Dynamic Clouds')
 @export
 var enable_dynamic_clouds: bool = false:
@@ -492,6 +512,9 @@ var clouds_panorama_speed: float = 0.005:
 #endregion
 
 var _atm_day_gradient: Gradient = null
+var _volumetric_light_direction:= Vector3.UP
+var _volumetric_light_color:= Color.WHITE
+var _volumetric_light_energy: float = 1.0
 
 #region Setup
 func _on_init() -> void:
@@ -534,6 +557,8 @@ func _initialize_params() -> void:
 	stars_field_texture = stars_field_texture
 	stars_scintillation = stars_scintillation
 	stars_scintillation_speed = stars_scintillation_speed
+
+	volumetric_clouds = volumetric_clouds
 	
 	enable_dynamic_clouds = enable_dynamic_clouds
 	dynamic_clouds_texture = dynamic_clouds_texture
@@ -582,14 +607,17 @@ func _get_celestial_uMuS(dir: Vector3) -> float:
 
 func _update_sun_direction(p_direction: Vector3) -> void:
 	super(p_direction)
+	_volumetric_light_direction = p_direction
 	_set_sun_uMuS()
 	_set_atm_day_tint()
 	_set_atm_night_tint()
+	_sync_volumetric_cloud_lighting()
 
 func _update_moon_direction(p_direction: Vector3) -> void:
 	super(p_direction)
 	_set_sun_uMuS()
 	_set_atm_night_tint()
+	_sync_volumetric_cloud_lighting()
 
 func _set_sun_uMuS() -> void:
 	RenderingServer.material_set_param(
@@ -599,18 +627,61 @@ func _set_sun_uMuS() -> void:
 #endregion
 
 #region Intensity
+func _update_sun_color(p_color: Color) -> void:
+	super(p_color)
+	_volumetric_light_color = p_color
+	_sync_volumetric_cloud_lighting()
+
+func _update_sun_intensity(p_intensity: float) -> void:
+	super(p_intensity)
+	_volumetric_light_energy = p_intensity
+	_sync_volumetric_cloud_lighting()
+
 func _update_sun_intensity_multiplier(p_multiplier: float) -> void:
 	super(p_multiplier)
 	atm_day_intensity = atm_day_intensity
+	_sync_volumetric_cloud_lighting()
 
 func _update_sun_eclipse_intensity(p_intensity: float) -> void:
 	super(p_intensity)
 	_set_atm_day_tint()
+	_sync_volumetric_cloud_lighting()
 
 func _update_moon_intensity_multiplier(p_multiplier: float) -> void:
 	super(p_multiplier)
 	atm_night_intensity = atm_night_intensity
+	_sync_volumetric_cloud_lighting()
 #endregion
+
+## Passes the Sun3D light values to the clouds.
+func set_volumetric_cloud_lighting(
+		p_direction: Vector3,
+		p_color: Color,
+		p_energy: float
+	) -> void:
+	_volumetric_light_direction = p_direction
+	_volumetric_light_color = p_color
+	_volumetric_light_energy = p_energy
+	_sync_volumetric_cloud_lighting()
+
+
+func _sync_volumetric_cloud_lighting() -> void:
+	if not is_instance_valid(volumetric_clouds):
+		return
+	var day_tint:= _atm_day_gradient.sample(
+		UnivSkyUtil.interpolate_by_above(sun_direction.y)
+	) if is_instance_valid(_atm_day_gradient) else Color.WHITE
+	var day_strength:= clampf(_get_celestial_uMuS(sun_direction) - 0.2, 0.0, 1.0)
+	var night_strength:= _get_atm_night_intensity()
+	var ambient_color:= day_tint * maxf(0.04, day_strength)
+	ambient_color += atm_night_tint * night_strength
+	volumetric_clouds.set_lighting(
+		_volumetric_light_direction,
+		_volumetric_light_color.srgb_to_linear(),
+		_volumetric_light_energy * sun_eclipse_intensity,
+		ambient_color.srgb_to_linear(),
+		atm_ground_color.srgb_to_linear()
+	)
 
 #region Atmospheric Scattering
 func _compute_wavelenghts_lambda(value: Vector3) -> Vector3:
