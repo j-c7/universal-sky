@@ -19,12 +19,18 @@ const FORWARD_PLUS_RENDER_METHOD_NAME:= "forward_plus"
 
 @export_group("Clouds")
 @export
-var enabled: bool = true:
+var enabled: bool = false:
 	set(value):
+		if enabled == value:
+			return
 		enabled = value
-		_apply_enabled()
 		if enabled:
 			request_full_update()
+			if is_instance_valid(_sky_material):
+				_connect_frame_update()
+				_queue_rebuild()
+		else:
+			_disable_clouds()
 
 ## Wind direction in degrees. Zero points along +X.
 @export_custom(PROPERTY_HINT_RANGE, "-180,180,0.1,radians_as_degrees")
@@ -168,16 +174,25 @@ func attach(p_sky_material: ShaderMaterial) -> void:
 	detach()
 	_sky_material = p_sky_material
 	_apply_material_parameters()
-	_connect_frame_update()
-	_queue_rebuild()
+	if enabled:
+		_connect_frame_update()
+		_queue_rebuild()
 
 
 func detach() -> void:
 	_disconnect_frame_update()
 	if is_instance_valid(_sky_material):
-		_sky_material.set_shader_parameter(ENABLE_PARAM, false)
+		_clear_material_bindings(_sky_material)
 	_sky_material = null
 	_can_run = false
+	RenderingServer.call_on_render_thread.call_deferred(_cleanup_render_resources)
+
+
+func _disable_clouds() -> void:
+	_disconnect_frame_update()
+	_can_run = false
+	if is_instance_valid(_sky_material):
+		_clear_material_bindings(_sky_material)
 	RenderingServer.call_on_render_thread.call_deferred(_cleanup_render_resources)
 
 
@@ -203,9 +218,9 @@ func request_full_update() -> void:
 
 func _finish_initialization() -> void:
 	_update_performance_values()
-	if is_instance_valid(_sky_material):
+	if enabled and is_instance_valid(_sky_material):
 		_connect_frame_update()
-	if is_instance_valid(_sky_material) and not _can_run and not _rebuild_queued:
+	if enabled and is_instance_valid(_sky_material) and not _can_run and not _rebuild_queued:
 		_queue_rebuild()
 
 
@@ -229,6 +244,10 @@ func _queue_rebuild() -> void:
 	_can_run = false
 	_apply_enabled()
 	_needs_full_update = true
+	if not enabled:
+		return
+	if is_instance_valid(_sky_material):
+		_clear_material_bindings(_sky_material)
 	if _rebuild_queued or not is_instance_valid(_sky_material):
 		return
 	if not _renderer_is_supported():
@@ -268,11 +287,21 @@ func _update_performance_values() -> void:
 func _apply_material_parameters() -> void:
 	_apply_enabled()
 	_apply_intensity()
-	if not is_instance_valid(_sky_material) or _textures.size() != 3:
+	if not is_instance_valid(_sky_material):
+		return
+	if not enabled or not _can_run or _textures.size() != 3:
+		_clear_material_bindings(_sky_material)
 		return
 	_sky_material.set_shader_parameter(BLEND_FROM_PARAM, _textures[_texture_to_blend_from])
 	_sky_material.set_shader_parameter(BLEND_TO_PARAM, _textures[_texture_to_blend_to])
 	_sky_material.set_shader_parameter(BLEND_AMOUNT_PARAM, 0.0)
+
+
+func _clear_material_bindings(p_material: ShaderMaterial) -> void:
+	p_material.set_shader_parameter(ENABLE_PARAM, false)
+	p_material.set_shader_parameter(BLEND_FROM_PARAM, null)
+	p_material.set_shader_parameter(BLEND_TO_PARAM, null)
+	p_material.set_shader_parameter(BLEND_AMOUNT_PARAM, 0.0)
 
 
 func _apply_enabled() -> void:
@@ -397,7 +426,7 @@ func _fill_push_constants() -> PackedFloat32Array:
 func _initialize_compute() -> void:
 	_cleanup_render_resources()
 	_rebuild_queued = false
-	if not is_instance_valid(_sky_material) or not _renderer_is_supported():
+	if not enabled or not is_instance_valid(_sky_material) or not _renderer_is_supported():
 		return
 
 	_rd = RenderingServer.get_rendering_device()
