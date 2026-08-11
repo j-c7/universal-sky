@@ -233,7 +233,7 @@ var atm_ground_color:= Color(0.543, 0.543, 0.543): # Color(0.204, 0.345, 0.467):
 		atm_ground_color = value
 		var c = atm_ground_color * 5.0
 		RenderingServer.material_set_param(
-			material.get_rid(), ATM_GROUND_COLOR_PARAM, 
+			material.get_rid(), ATM_GROUND_COLOR_PARAM,
 				c.srgb_to_linear() if is_compatibility else c
 		)
 		_sync_volumetric_cloud_lighting()
@@ -249,7 +249,7 @@ var background_color:= Color(1.0, 1.0, 1.0, 1.0):
 	set(value):
 		background_color = value
 		RenderingServer.material_set_param(
-			material.get_rid(), DEEP_SPACE_BACKGROUND_COLOR_PARAM, 
+			material.get_rid(), DEEP_SPACE_BACKGROUND_COLOR_PARAM,
 				background_color.srgb_to_linear() if is_compatibility else background_color
 		)
 		emit_changed()
@@ -274,7 +274,7 @@ var background_contrast: float = 0.561:
 		)
 		emit_changed()
 
-@export 
+@export
 var use_custom_bg_texture: bool = false:
 	get: return use_custom_bg_texture
 	set(value):
@@ -300,7 +300,7 @@ var stars_field_color:= Color.WHITE:
 	set(value):
 		stars_field_color = value
 		RenderingServer.material_set_param(
-			material.get_rid(), STARS_FIELD_COLOR_PARAM, 
+			material.get_rid(), STARS_FIELD_COLOR_PARAM,
 				stars_field_color.srgb_to_linear() if is_compatibility else stars_field_color
 		)
 		emit_changed()
@@ -482,7 +482,7 @@ var enable_clouds_panorama: bool = false:
 		)
 		emit_changed()
 
-@export 
+@export
 var clouds_panorama: Texture2D = null:
 	get: return clouds_panorama
 	set(value):
@@ -528,7 +528,7 @@ func _initialize_params() -> void:
 	debanding_level = debanding_level
 	exposure = exposure
 	horizon_offset = horizon_offset
-	
+
 	atm_contrast = atm_contrast
 	atm_wavelenghts = atm_wavelenghts
 	atm_rayleigh_level = atm_rayleigh_level
@@ -541,7 +541,7 @@ func _initialize_params() -> void:
 	atm_enable_night_scattering = atm_enable_night_scattering
 	atm_night_tint = atm_night_tint
 	atm_ground_color = atm_ground_color
-	
+
 	deep_space_aligment_matrix = deep_space_aligment_matrix
 	deep_space_rotation_matrix = deep_space_rotation_matrix
 
@@ -550,7 +550,7 @@ func _initialize_params() -> void:
 	background_texture = background_texture
 	background_intensity = background_intensity
 	background_contrast = background_contrast
-	
+
 	stars_field_color = stars_field_color
 	stars_field_intensity = stars_field_intensity
 	use_custom_stars_field_texture = use_custom_stars_field_texture
@@ -559,7 +559,7 @@ func _initialize_params() -> void:
 	stars_scintillation_speed = stars_scintillation_speed
 
 	volumetric_clouds = volumetric_clouds
-	
+
 	enable_dynamic_clouds = enable_dynamic_clouds
 	dynamic_clouds_texture = dynamic_clouds_texture
 	dynamic_clouds_texture2 = dynamic_clouds_texture2
@@ -570,7 +570,7 @@ func _initialize_params() -> void:
 	dynamic_clouds_direction = dynamic_clouds_direction
 	dynamic_clouds_size = dynamic_clouds_size
 	dynamic_clouds_uv = dynamic_clouds_uv
-	
+
 	enable_clouds_panorama = enable_clouds_panorama
 	clouds_panorama = clouds_panorama
 	clouds_panorama_intensity = clouds_panorama_intensity
@@ -653,7 +653,7 @@ func _update_moon_intensity_multiplier(p_multiplier: float) -> void:
 	_sync_volumetric_cloud_lighting()
 #endregion
 
-## Passes the Sun3D light values to the clouds.
+## Passes the active celestial directional light values to the clouds.
 func set_volumetric_cloud_lighting(
 		p_direction: Vector3,
 		p_color: Color,
@@ -678,7 +678,7 @@ func _sync_volumetric_cloud_lighting() -> void:
 	volumetric_clouds.set_lighting(
 		_volumetric_light_direction,
 		_volumetric_light_color.srgb_to_linear(),
-		_volumetric_light_energy * sun_eclipse_intensity,
+		_volumetric_light_energy,
 		ambient_color.srgb_to_linear(),
 		atm_ground_color.srgb_to_linear()
 	)
@@ -692,7 +692,7 @@ func _compute_wavelenghts(value: Vector3, computeLambda: bool = false) -> Vector
 	var ret: Vector3 = value
 	if computeLambda:
 		ret = _compute_wavelenghts_lambda(ret)
-	
+
 	ret.x = pow(ret.x, k)
 	ret.y = pow(ret.y, k)
 	ret.z = pow(ret.z, k)
@@ -740,7 +740,7 @@ func _get_atm_night_intensity() -> float:
 		ret =  clamp(_get_celestial_uMuS(-sun_direction), 0.0, 1.0)
 	else:
 		ret = clamp(_get_celestial_uMuS(moon_direction), 0.0, 1.0)
-	
+
 	return ret * atm_night_intensity * _get_atm_moon_phases_mul() * moon_intensity_multiplier
 
 func _get_atm_moon_phases_mul() -> float:

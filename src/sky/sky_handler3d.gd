@@ -332,9 +332,11 @@ func _on_moon_direction_changed(p_value: Vector3) -> void:
 		return
 	
 	material.moon_direction = p_value
+	_queue_volumetric_cloud_lighting_sync()
 
 func _on_updated_moon_phases_mul(p_value: float) -> void:
 	material.moon_phases_mul = p_value
+	_queue_volumetric_cloud_lighting_sync()
 
 func _on_updated_moon_matrix(p_value: Basis) -> void:
 	material.moon_matrix = p_value
@@ -360,6 +362,7 @@ func _on_moon_prop_changed(p_type: int, p_value: Variant) -> void:
 			material.moon_mie_intensity = p_value
 		Moon3D.CelestialProp.MIE_ANISOTROPY:
 			material.moon_mie_anisotropy = p_value
+	_queue_volumetric_cloud_lighting_sync()
 
 func _on_moon_yaw_offset_changed(p_value: float) -> void:
 	if not material_is_valid or not moon_is_valid:
@@ -380,6 +383,7 @@ func _update_sun_data() -> void:
 func _update_moon_data() -> void:
 	if material_is_valid and moon_is_valid:
 		moon.initialize_props()
+		_queue_volumetric_cloud_lighting_sync()
 
 func _on_update_sun_eclipse(p_value: float) -> void:
 	material.sun_eclipse_intensity = p_value
@@ -395,10 +399,21 @@ func _queue_volumetric_cloud_lighting_sync() -> void:
 
 
 func _sync_volumetric_cloud_lighting() -> void:
-	if material is StandardSkyMaterial and sun_is_valid:
-		material.set_volumetric_cloud_lighting(
-			sun.direction,
-			sun.light_color,
-			sun.light_energy
-		)
+	if not material is StandardSkyMaterial:
+		return
+
+	var direct_light: CelestialBody3D = sun if sun_is_valid else null
+	if moon_is_valid and (
+			not is_instance_valid(direct_light)
+			or moon.light_energy > direct_light.light_energy
+		):
+		direct_light = moon
+	if not is_instance_valid(direct_light):
+		return
+
+	material.set_volumetric_cloud_lighting(
+		direct_light.direction,
+		direct_light.light_color,
+		direct_light.light_energy
+	)
 #endregion
