@@ -13,10 +13,12 @@ render_mode use_quarter_res_pass, use_half_res_pass;
 #include "res://addons/universal-sky/src/sky/shaders/sky-components/univsky_deep_space.gdshaderinc"
 #include "res://addons/universal-sky/src/sky/shaders/sky-components/univsky_dynamic_clouds.gdshaderinc"
 #include "res://addons/universal-sky/src/sky/shaders/sky-components/univsky_clouds_panorama.gdshaderinc"
+#include "res://addons/universal-sky/src/sky/shaders/sky-components/univsky_volumetric_clouds.gdshaderinc"
 
 uniform float debanding_level;
 uniform bool enable_dynamic_clouds;
 uniform bool enable_clouds_panorama;
+uniform bool enable_volumetric_clouds;
 
 vec3 colorCorrection(vec3 col, vec2 fragcoord){
 	#if CURRENT_RENDERER == RENDERER_COMPATIBILITY
@@ -57,6 +59,13 @@ vec4 getSky(vec3 scatter, vec3 pos, vec3 horizonBlend, float time){
 
 	// Apply atmospheric scattering.
 	finalColor.rgb += scatter;
+
+	// Blend clouds over the finished sky.
+	if(enable_volumetric_clouds)
+	{
+		vec4 volumetricClouds = sampleVolumetricClouds(pos);
+		finalColor.rgb = mix(finalColor.rgb, volumetricClouds.rgb, volumetricClouds.a);
+	}
 
 	// Clouds
 	vec3 cloudsColor = vec3(0.0);

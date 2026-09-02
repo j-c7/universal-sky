@@ -1,0 +1,290 @@
+[gd_scene format=3 uid="uid://blw0xvsvrq8jc"]
+
+[ext_resource type="Script" uid="uid://dd4gwe2rkn4li" path="res://addons/universal-sky/src/sky/sky_handler3d.gd" id="1_5pvsd"]
+[ext_resource type="Texture2D" uid="uid://cvqafkrcfb246" path="res://addons/universal-sky/assets/textures/milky-way/Milkyway.jpg" id="2_gv6sx"]
+[ext_resource type="Script" uid="uid://uw0ciqso7v3p" path="res://addons/universal-sky/src/sky/material/standard_sky_material.gd" id="3_2t0jo"]
+[ext_resource type="Texture2D" uid="uid://c05osp1sjpmxh" path="res://addons/universal-sky/example/textures/clouds_panorama.png" id="3_gv6sx"]
+[ext_resource type="Texture2D" uid="uid://bvyqf03kl2e61" path="res://addons/universal-sky/assets/textures/milky-way/StarField.jpg" id="4_hmx4h"]
+[ext_resource type="Script" uid="uid://bx6t48lo44hth" path="res://addons/universal-sky/src/sky/celestials/sun3d.gd" id="5_frjel"]
+[ext_resource type="Script" uid="uid://cskkvx0bcj0cd" path="res://addons/universal-sky/src/sky/celestials/moon3d.gd" id="6_yu7y7"]
+[ext_resource type="Texture2D" uid="uid://bg0ltx4f5n1qx" path="res://addons/universal-sky/assets/textures/moon/MoonMap.png" id="7_cvb06"]
+[ext_resource type="Script" uid="uid://c4qqcppqxvi5t" path="res://addons/universal-sky/src/planetary/planetary_date_time3d.gd" id="10_frjel"]
+[ext_resource type="Script" uid="uid://ctlwjyt13pl4r" path="res://addons/universal-sky/src/planetary/planetary3d.gd" id="10_hmx4h"]
+[ext_resource type="Shader" uid="uid://crpn6jhm4lfn6" path="res://addons/universal-sky/src/sky/shaders/standard-sky/univsky_standard_sky.gdshader" id="11_hmx4h"]
+[ext_resource type="Script" uid="uid://1of632nc424f" path="res://addons/universal-sky/src/sky/volumetric-clouds/volumetric_clouds.gd" id="12_clouds"]
+
+[sub_resource type="Gradient" id="Gradient_5pvsd"]
+offsets = PackedFloat32Array(0.80497926, 0.88381743)
+colors = PackedColorArray(0.953125, 0.9824219, 1, 1, 0.79296875, 0.43984985, 0.43984985, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_2t0jo"]
+noise_type = 3
+offset = Vector3(0, 166.67, 0)
+fractal_type = 3
+fractal_weighted_strength = 0.34
+cellular_distance_function = 3
+cellular_return_type = 4
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_hmx4h"]
+noise = SubResource("FastNoiseLite_2t0jo")
+seamless = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gv6sx"]
+frequency = 0.0048
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_2t0jo"]
+noise = SubResource("FastNoiseLite_gv6sx")
+seamless = true
+
+[sub_resource type="Resource" id="Resource_volumetric_clouds"]
+resource_local_to_scene = true
+script = ExtResource("12_clouds")
+wind_direction = 0.6108652381980153
+wind_speed = 2.0
+density = 0.075
+coverage = 0.35
+intensity = 4.0
+direct_light_multiplier = 1.44
+ambient_light_multiplier = 0.35
+frames_to_update = 4
+texture_size = 768
+metadata/_custom_type_script = "uid://1of632nc424f"
+
+[sub_resource type="Resource" id="Resource_uu07e"]
+script = ExtResource("3_2t0jo")
+atm_day_intensity = 7.2
+atm_day_gradient = SubResource("Gradient_5pvsd")
+atm_night_intensity = 0.365
+atm_night_tint = Color(0, 1, 0.9296875, 1)
+atm_ground_color = Color(0.1574707, 0.24809837, 0.3359375, 1)
+background_texture = ExtResource("2_gv6sx")
+stars_field_texture = ExtResource("4_hmx4h")
+volumetric_clouds = SubResource("Resource_volumetric_clouds")
+dynamic_clouds_texture = SubResource("NoiseTexture2D_hmx4h")
+dynamic_clouds_texture2 = SubResource("NoiseTexture2D_2t0jo")
+dynamic_clouds_coverage = 0.47
+clouds_panorama = ExtResource("3_gv6sx")
+
+[sub_resource type="Gradient" id="Gradient_gv6sx"]
+offsets = PackedFloat32Array(0.73992676, 0.82783884)
+colors = PackedColorArray(0.9843137, 0.84313726, 0.7882353, 1, 1, 0.5239258, 0.23828125, 1)
+
+[sub_resource type="Curve" id="Curve_gv6sx"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.44061303, 1), 0.0, 0.0, 0, 0, Vector2(0.55813956, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yu7y7"]
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.640625, 1, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_hmx4h"]
+radius = 50.0
+height = 100.0
+
+[sub_resource type="Curve" id="Curve_2t0jo"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.44854876, 0), 0.0, 0.0, 0, 0, Vector2(0.49868068, 1), 0.0, 0.0, 0, 0, Vector2(0.7546174, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Texture2DRD" id="Texture2DRD_dh6iw"]
+
+[sub_resource type="Texture2DRD" id="Texture2DRD_h1sja"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ywtfq"]
+shader = ExtResource("11_hmx4h")
+shader_parameter/exposure = 1.0
+shader_parameter/tonemap_level = 0.0
+shader_parameter/horizon_offset = 0.0
+shader_parameter/sun_direction = Vector3(0, 0, 0)
+shader_parameter/sun_color = Color(0, 0, 0, 1)
+shader_parameter/sun_intensity = 0.0
+shader_parameter/sun_size = 0.0
+shader_parameter/sun_eclipse_intensity = 0.0
+shader_parameter/moon_direction = Vector3(0, 0, 0)
+shader_parameter/moon_color = Color(0, 0, 0, 1)
+shader_parameter/moon_intensity = 0.0
+shader_parameter/moon_size = 0.0
+shader_parameter/moon_texture_yaw_offset = 0.0
+shader_parameter/moon_matrix = Basis(1, 0, 0, 0, 1, 0, 0, 0, 1)
+shader_parameter/atm_sun_mie_anisotropy = 0.0
+shader_parameter/atm_sun_mie_color = Color(0, 0, 0, 1)
+shader_parameter/atm_sun_mie_intensity = 0.0
+shader_parameter/atm_moon_mie_anisotropy = 0.0
+shader_parameter/atm_moon_mie_color = Color(0, 0, 0, 1)
+shader_parameter/atm_moon_mie_intensity = 0.0
+shader_parameter/atm_day_intensity = 15.0
+shader_parameter/atm_contrast = 0.1
+shader_parameter/atm_thickness = 1.0
+shader_parameter/atm_rayleigh_level = 1.0
+shader_parameter/atm_day_tint = Color(1, 1, 1, 1)
+shader_parameter/atm_night_tint = Color(0.255, 0.337, 0.447, 1)
+shader_parameter/atm_beta_ray = Vector3(0, 0, 0)
+shader_parameter/atm_beta_mie = Vector3(0, 0, 0)
+shader_parameter/atm_ground_color = Color(0.255, 0.337, 0.447, 1)
+shader_parameter/sun_uMuS = 0.0
+shader_parameter/background_texture = ExtResource("2_gv6sx")
+shader_parameter/background_color = Color(0, 0, 0, 1)
+shader_parameter/background_intensity = 0.0
+shader_parameter/background_contrast = 0.0
+shader_parameter/stars_field_texture = ExtResource("4_hmx4h")
+shader_parameter/stars_field_color = Color(0, 0, 0, 1)
+shader_parameter/stars_field_intensity = 0.0
+shader_parameter/stars_scintillation = 0.0
+shader_parameter/stars_scintillation_speed = 0.0
+shader_parameter/deep_space_aligment_matrix = Basis(1, 0, 0, 0, 1, 0, 0, 0, 1)
+shader_parameter/deep_space_rotation_matrix = Basis(1, 0, 0, 0, 1, 0, 0, 0, 1)
+shader_parameter/dynamic_clouds_texture = SubResource("NoiseTexture2D_hmx4h")
+shader_parameter/dynamic_clouds_texture2 = SubResource("NoiseTexture2D_2t0jo")
+shader_parameter/dynamic_clouds_coverage = 0.5
+shader_parameter/dynamic_clouds_absorption = 15.0
+shader_parameter/dynamic_clouds_density = 30.0
+shader_parameter/dynamic_clouds_intensity = 1.0
+shader_parameter/dynamic_clouds_direction = Vector2(0.005, 0.005)
+shader_parameter/dynamic_clouds_size = 1.0
+shader_parameter/dynamic_clouds_uv = Vector2(0.1, 0.1)
+shader_parameter/clouds_panorama = ExtResource("3_gv6sx")
+shader_parameter/clouds_panorama_speed = 0.01
+shader_parameter/clouds_panorama_intensity = 1.0
+shader_parameter/volumetric_clouds_blend_from_texture = SubResource("Texture2DRD_dh6iw")
+shader_parameter/volumetric_clouds_blend_to_texture = SubResource("Texture2DRD_h1sja")
+shader_parameter/volumetric_clouds_blend_amount = 0.75
+shader_parameter/volumetric_clouds_intensity = 4.0
+shader_parameter/debanding_level = 0.0
+shader_parameter/enable_dynamic_clouds = false
+shader_parameter/enable_clouds_panorama = false
+shader_parameter/enable_volumetric_clouds = true
+
+[sub_resource type="Sky" id="Sky_ljm3b"]
+sky_material = SubResource("ShaderMaterial_ywtfq")
+process_mode = 2
+radiance_size = 1
+
+[sub_resource type="Environment" id="Environment_tycrn"]
+background_mode = 2
+sky = SubResource("Sky_ljm3b")
+tonemap_mode = 3
+tonemap_white = 6.0
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+sdfgi_cascades = 8
+glow_enabled = true
+volumetric_fog_density = 0.0001
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5pvsd"]
+roughness = 0.97
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_1aaaw"]
+size = Vector2(7, 7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gv6sx"]
+metallic = 0.17
+roughness = 0.29
+
+[sub_resource type="SphereMesh" id="SphereMesh_2t0jo"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hmx4h"]
+metallic = 1.0
+roughness = 0.11
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_frjel"]
+metallic = 1.0
+roughness = 0.51
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ywtfq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2t0jo"]
+shading_mode = 0
+albedo_color = Color(0, 1, 0.015625, 1)
+
+[sub_resource type="TextMesh" id="TextMesh_hmx4h"]
+text = "N"
+pixel_size = 0.0485
+
+[node name="VolumetricCloudsExample" type="Node3D" unique_id=1466598791]
+
+[node name="Planetary" type="Node" parent="." unique_id=682861938]
+script = ExtResource("10_hmx4h")
+latitude = 30.870000000000005
+world_orientation = -28.476
+
+[node name="PlanetaryDateTime" type="Node" parent="Planetary" unique_id=1970232311]
+script = ExtResource("10_frjel")
+timeline = 21.204129262218316
+day = 5
+month = 4
+year = 2026
+
+[node name="SkyHandler" type="Node" parent="Planetary" unique_id=45331783]
+script = ExtResource("1_5pvsd")
+material = SubResource("Resource_uu07e")
+enviro_container = NodePath("../../WorldEnvironment")
+
+[node name="Sun3D" type="DirectionalLight3D" parent="Planetary/SkyHandler" unique_id=1824873405]
+transform = Transform3D(-0.572953267165266, -0.4684259348989578, -0.6725335089803142, 2.7755579386182523e-17, 0.8205753385940603, -0.571538010159139, 0.8195882047355775, -0.32746465636592603, -0.4701510697957278, 0.08873164, 0.9503837, -1.1224185)
+light_color = Color(1, 0.5239258, 0.23828125, 1)
+light_energy = 0.0
+script = ExtResource("5_frjel")
+enable_solar_eclipse = true
+body_color = Color(1, 0.7058, 0.447, 1)
+body_intensity = 10.0
+lighting_gradient = SubResource("Gradient_gv6sx")
+lighting_energy_curve = SubResource("Curve_gv6sx")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Planetary/SkyHandler/Sun3D" unique_id=706314573]
+transform = Transform3D(0.99969345, -0.012712661, -0.021251034, 0.021409962, 0.012486177, 0.9996928, -0.012443379, -0.999841, 0.012754642, -4.76851, 5.2660217, -376.89432)
+visible = false
+material_override = SubResource("StandardMaterial3D_yu7y7")
+mesh = SubResource("SphereMesh_hmx4h")
+
+[node name="Moon3D" type="DirectionalLight3D" parent="Planetary/SkyHandler" unique_id=1434271075]
+transform = Transform3D(0.3024253868491613, -0.3178696484135732, 0.8986087980910082, 0.8835061664999657, 0.4472825079202427, -0.13912300983343096, -0.35770901462735044, 0.8360007444530234, 0.41610938000521047, -1.5601343, -0.00061772263, -0.42799088)
+light_color = Color(0.54, 0.7, 0.9, 1)
+light_energy = 0.0
+script = ExtResource("6_yu7y7")
+texture = ExtResource("7_cvb06")
+yaw_offset = -0.34
+enable_mie_phases = true
+enable_light_moon_phases = true
+light_transition_curve = SubResource("Curve_2t0jo")
+intensity_multiplier = 1.3
+body_color = Color(1, 1, 1, 1)
+mie_color = Color(0.623, 0.786, 1, 1)
+lighting_color = Color(0.54, 0.7, 0.9, 1)
+lighting_energy = 0.3
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=258397390]
+environment = SubResource("Environment_tycrn")
+
+[node name="Primitives" type="Node3D" parent="." unique_id=279051095]
+
+[node name="Floor" type="MeshInstance3D" parent="Primitives" unique_id=1386836742]
+material_override = SubResource("StandardMaterial3D_5pvsd")
+mesh = SubResource("PlaneMesh_1aaaw")
+skeleton = NodePath("../..")
+
+[node name="Sphere" type="MeshInstance3D" parent="Primitives" unique_id=2102319153]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0221938, 0.4953506, 0)
+material_override = SubResource("StandardMaterial3D_gv6sx")
+mesh = SubResource("SphereMesh_2t0jo")
+
+[node name="Sphere2" type="MeshInstance3D" parent="Primitives" unique_id=557436905]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4953506, 0)
+material_override = SubResource("StandardMaterial3D_hmx4h")
+mesh = SubResource("SphereMesh_2t0jo")
+
+[node name="Sphere3" type="MeshInstance3D" parent="Primitives" unique_id=1293079506]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.022, 0.495, 0)
+material_override = SubResource("StandardMaterial3D_frjel")
+mesh = SubResource("SphereMesh_2t0jo")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1233224488]
+transform = Transform3D(0.14902555254371466, -0.08485521813482315, -0.9851857574307156, 0.02735209835357268, 0.9962837338821076, -0.08167364518363923, 0.9884549799584692, -0.01477543763203278, 0.15079270220433377, -5.564290462510122, 1.0210263422896018, 1.7945598783601044)
+attributes = SubResource("CameraAttributesPractical_ywtfq")
+fov = 37.849285
+
+[node name="Nort" type="MeshInstance3D" parent="." unique_id=331309231]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -4.371139e-08, -3.9275248)
+material_override = SubResource("StandardMaterial3D_2t0jo")
+mesh = SubResource("TextMesh_hmx4h")
